@@ -1,0 +1,6 @@
+{
+  "name": "FOC DynoLab V2 — BLDC/FOC 测功仪标定与 6-MOS 波形导出工具",
+  "description": "BLDC/FOC 测功仪分步标定、运行态相电流与双 Vq 推算、二维效率 Map 重构及 6-MOS 瞬态结温软件波形导出工作台",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
