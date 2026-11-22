@@ -153,6 +153,29 @@ export default function App() {
     showToast('已载入 13.5V / 30W / 1000 RPM / 0.1 N·m 演示数据集并完成分步标定');
   };
 
+  const isStandaloneFile = typeof window !== 'undefined' && window.location.protocol === 'file:';
+
+  const handleDownloadStandaloneHtml = useCallback(async () => {
+    try {
+      const resp = await fetch('/FOC_DynoLab_V2.html');
+      if (!resp.ok) {
+        throw new Error(`HTTP ${resp.status}`);
+      }
+      const blob = await resp.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'FOC_DynoLab_V2.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('已开始下载离线单文件 FOC_DynoLab_V2.html（双击即可离线运行）');
+    } catch {
+      showToast('下载失败：请确认 FOC_DynoLab_V2.html 已生成');
+    }
+  }, [showToast]);
+
   const activePyContent =
     PYTHON_BUNDLE_FILES.find((f) => f.name === selectedPyFile)?.content ?? PYTHON_BUNDLE_FILES[0].content;
 
@@ -251,31 +274,48 @@ export default function App() {
               </span>
             </div>
 
-            <div className="flex items-center gap-1 rounded-md border border-[#DCE2EC] bg-[#FAFBFD] p-0.5 dark:border-[#262C38] dark:bg-[#191D26]">
-              <button
-                type="button"
-                onClick={() => setIsDark(true)}
-                className={`inline-flex items-center gap-1 rounded px-2.5 py-1 text-[11px] font-medium transition-colors ${
-                  isDark
-                    ? 'bg-[#252C3A] text-sky-300'
-                    : 'text-slate-500 hover:text-slate-800'
-                }`}
-              >
-                <Moon className="h-3 w-3" />
-                护眼深灰
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsDark(false)}
-                className={`inline-flex items-center gap-1 rounded px-2.5 py-1 text-[11px] font-medium transition-colors ${
-                  !isDark
-                    ? 'bg-sky-50 text-sky-700'
-                    : 'text-[#8E98A8] hover:text-[#E6EAF2]'
-                }`}
-              >
-                <Sun className="h-3 w-3" />
-                柔光白昼
-              </button>
+            <div className="flex flex-wrap items-center gap-2">
+              {isStandaloneFile ? (
+                <span className="rounded-md border border-[#DCE2EC] bg-[#FAFBFD] px-2.5 py-1 text-[11px] font-medium text-slate-500 dark:border-[#262C38] dark:bg-[#191D26] dark:text-[#8E98A8]">
+                  离线单文件版
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => void handleDownloadStandaloneHtml()}
+                  className="inline-flex items-center gap-1.5 rounded-md border border-[#DCE2EC] bg-[#FAFBFD] px-2.5 py-1 text-[11px] font-medium text-slate-600 transition-colors hover:border-sky-500 hover:text-sky-700 dark:border-[#262C38] dark:bg-[#191D26] dark:text-[#CBD5E1] dark:hover:border-sky-400/60 dark:hover:text-sky-300"
+                >
+                  <Download className="h-3.5 w-3.5" />
+                  下载离线 HTML
+                </button>
+              )}
+
+              <div className="flex items-center gap-1 rounded-md border border-[#DCE2EC] bg-[#FAFBFD] p-0.5 dark:border-[#262C38] dark:bg-[#191D26]">
+                <button
+                  type="button"
+                  onClick={() => setIsDark(true)}
+                  className={`inline-flex items-center gap-1 rounded px-2.5 py-1 text-[11px] font-medium transition-colors ${
+                    isDark
+                      ? 'bg-[#252C3A] text-sky-300'
+                      : 'text-slate-500 hover:text-slate-800'
+                  }`}
+                >
+                  <Moon className="h-3 w-3" />
+                  护眼深灰
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsDark(false)}
+                  className={`inline-flex items-center gap-1 rounded px-2.5 py-1 text-[11px] font-medium transition-colors ${
+                    !isDark
+                      ? 'bg-sky-50 text-sky-700'
+                      : 'text-[#8E98A8] hover:text-[#E6EAF2]'
+                  }`}
+                >
+                  <Sun className="h-3 w-3" />
+                  柔光白昼
+                </button>
+              </div>
             </div>
           </div>
 
